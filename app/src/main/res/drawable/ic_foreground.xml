@@ -4,25 +4,34 @@
     android:viewportWidth="108"
     android:viewportHeight="108">
 
-    <!-- Keep in sync with non-adaptive ic_launcher.xml -->
+    <!-- SkyTerm Chevron (>) in Electric Cyan -->
     <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M34,38
-                          h6
-                          l12,16
-                          l-12,16
-                          h-6
-                          l12,-16
-                          "
+        android:fillColor="#00E5FF"
+        android:pathData="M34,36
+                          h7
+                          l14,18
+                          l-14,18
+                          h-7
+                          l14,-18
+                          Z"
         />
 
+    <!-- SkyTerm Terminal Cursor (_) in Pure White -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M56,66
+        android:pathData="M58,68
                           h18
-                          v4
+                          v5
                           h-18
-                          "
+                          Z"
+        />
+
+    <!-- Sky Accent Dot -->
+    <path
+        android:fillColor="#38BDF8"
+        android:pathData="M66,40
+                          a3,3 0 1,0 6,0
+                          a3,3 0 1,0 -6,0"
         />
 
 </vector>

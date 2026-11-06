@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="50%" stop-color="#0A0F1D"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </linearGradient>
+
+    <!-- Cyan Glow Gradient -->
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="50%" stop-color="#00E5FF"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+
+    <!-- Accent Border Gradient -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#00E5FF" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0284C7" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <!-- Soft Drop Shadow Filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Squircle Base / Terminal Window -->
+  <rect x="24" y="24" width="464" height="464" rx="96" ry="96" fill="url(#bgGrad)"/>
+  <rect x="24" y="24" width="464" height="464" rx="96" ry="96" fill="none" stroke="url(#borderGrad)" stroke-width="4"/>
+
+  <!-- Subtle Top Window Bar Divider -->
+  <line x1="24" y1="120" x2="488" y2="120" stroke="#1E293B" stroke-width="2"/>
+
+  <!-- Window Control Dots -->
+  <circle cx="80" cy="72" r="10" fill="#EF4444"/>
+  <circle cx="114" cy="72" r="10" fill="#F59E0B"/>
+  <circle cx="148" cy="72" r="10" fill="#10B981"/>
+
+  <!-- Terminal Title: SkyTerm -->
+  <text x="256" y="78" fill="#64748B" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="16" font-weight="600" text-anchor="middle" letter-spacing="3">SKYTERM</text>
+
+  <!-- Central Emblem: Stylized Sky Wing Chevron (>) and Cursor (_) -->
+  <g filter="url(#glow)">
+    <!-- Terminal Prompt Chevron (>) -->
+    <path d="M 120 180 L 250 290 L 120 400 L 175 400 L 305 290 L 175 180 Z" fill="url(#skyGrad)"/>
+    
+    <!-- Modern Terminal Blinking Cursor Bar (_) -->
+    <rect x="330" y="360" width="80" height="38" rx="8" ry="8" fill="#F8FAFC"/>
+
+    <!-- Dynamic Cyan Cyber Spark -->
+    <polygon points="350,210 365,240 395,245 370,265 375,295 350,278 325,295 330,265 305,245 335,240" fill="#38BDF8" opacity="0.85"/>
+  </g>
+</svg>

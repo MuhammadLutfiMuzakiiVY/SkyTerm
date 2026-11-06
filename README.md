@@ -1,13 +1,23 @@
-# Termux application
+<p align="center">
+  <img src="art/skyterm-logo.png" width="160" alt="SkyTerm Logo">
+</p>
 
-[![Build status](https://github.com/termux/termux-app/workflows/Build/badge.svg)](https://github.com/termux/termux-app/actions)
-[![Testing status](https://github.com/termux/termux-app/workflows/Unit%20tests/badge.svg)](https://github.com/termux/termux-app/actions)
-[![Join the chat at https://gitter.im/termux/termux](https://badges.gitter.im/termux/termux.svg)](https://gitter.im/termux/termux)
-[![Join the Termux discord server](https://img.shields.io/discord/641256914684084234.svg?label=&logo=discord&logoColor=ffffff&color=5865F2)](https://discord.gg/HXpF69X)
-[![Termux library releases at Jitpack](https://jitpack.io/v/termux/termux-app.svg)](https://jitpack.io/#termux/termux-app)
+<h1 align="center">SkyTerm</h1>
 
+<p align="center">
+  <b>Advanced, Optimized Android Linux Terminal &amp; Development Environment</b>
+</p>
 
-[Termux](https://termux.com) is an Android terminal application and Linux environment.
+<p align="center">
+  <img src="https://img.shields.io/badge/Architecture-Universal%20(ARMv7%20%7C%20ARM64%20%7C%20x86%20%7C%20x86__64)-00E5FF?style=flat-square" alt="Universal Architecture">
+  <img src="https://img.shields.io/badge/Runtime-Linux%20%2B%20Rust%20Core-0077B6?style=flat-square" alt="Linux + Rust Core">
+  <img src="https://img.shields.io/badge/License-GPLv3-22C55E?style=flat-square" alt="GPLv3">
+</p>
+
+---
+
+**SkyTerm** adalah terminal Android tingkat lanjut dan *runtime* Linux yang dioptimalkan secara mendalam untuk efisiensi sistem, ukuran aplikasi minimal, *startup* instan, dan integrasi penuh dengan sistem Android (Quick Settings Tile, Clipboard, Boot Task Manager, Battery Monitor, SAF Storage, Snap Window, dan Picture-in-Picture).
+
 
 Note that this repository is for the app itself (the user interface and the terminal emulation). For the packages installable inside the app, see [termux/termux-packages](https://github.com/termux/termux-packages).
 
