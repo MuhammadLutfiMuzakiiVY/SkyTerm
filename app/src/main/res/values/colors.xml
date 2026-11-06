@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="skyterm_toolbar_surface">#111821</color>
+    <color name="skyterm_key_background">#1B2530</color>
+    <color name="skyterm_key_text">#D9E2EC</color>
+    <color name="skyterm_key_active_text">#77D9C6</color>
+    <color name="skyterm_key_active_background">#23443F</color>
+    <color name="skyterm_key_stroke">#344451</color>
+</resources>

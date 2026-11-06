@@ -1,0 +1,142 @@
+package com.termux.app.event;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
+import android.os.Build;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.termux.app.QuickSettingsTileService;
+import com.termux.app.TermuxService;
+import com.termux.shared.data.IntentUtils;
+import com.termux.shared.logger.Logger;
+import com.termux.shared.net.uri.UriUtils;
+import com.termux.shared.shell.command.ExecutionCommand;
+import com.termux.shared.termux.TermuxConstants;
+import com.termux.shared.termux.TermuxConstants.TERMUX_APP.TERMUX_SERVICE;
+import com.termux.shared.termux.TermuxUtils;
+import com.termux.shared.termux.file.TermuxFileUtils;
+import com.termux.shared.termux.shell.command.environment.TermuxShellEnvironment;
+import com.termux.shared.termux.shell.TermuxShellManager;
+
+import java.io.File;
+import java.util.Arrays;
+
+public class SystemEventReceiver extends BroadcastReceiver {
+
+    private static SystemEventReceiver mInstance;
+
+    private static final String LOG_TAG = "SystemEventReceiver";
+
+    public static synchronized SystemEventReceiver getInstance() {
+        if (mInstance == null) {
+            mInstance = new SystemEventReceiver();
+        }
+        return mInstance;
+    }
+
+    @Override
+    public void onReceive(@NonNull Context context, @Nullable Intent intent) {
+        if (intent == null) return;
+        Logger.logDebug(LOG_TAG, "Intent Received:\n" + IntentUtils.getIntentString(intent));
+
+        String action = intent.getAction();
+        if (action == null) return;
+
+        switch (action) {
+            case Intent.ACTION_BOOT_COMPLETED:
+                onActionBootCompleted(context, intent);
+                break;
+            case Intent.ACTION_PACKAGE_ADDED:
+            case Intent.ACTION_PACKAGE_REMOVED:
+            case Intent.ACTION_PACKAGE_REPLACED:
+                onActionPackageUpdated(context, intent);
+                break;
+            default:
+                Logger.logError(LOG_TAG, "Invalid action \"" + action + "\" passed to " + LOG_TAG);
+        }
+    }
+
+    public static final String BOOT_SCRIPTS_DIR_PATH = TermuxConstants.TERMUX_HOME_DIR_PATH + "/.termux/boot";
+
+    public synchronized void onActionBootCompleted(@NonNull Context context, @NonNull Intent intent) {
+        TermuxShellManager.onActionBootCompleted(context, intent);
+        runBootScriptsIfEnabled(context);
+    }
+
+    private void runBootScriptsIfEnabled(@NonNull Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !QuickSettingsTileService.isBootTasksEnabled(context)) {
+            Logger.logDebug(LOG_TAG, "Boot tasks disabled by user preference");
+            return;
+        }
+
+        File bootDir = new File(BOOT_SCRIPTS_DIR_PATH);
+        if (!bootDir.isDirectory()) return;
+
+        File[] files = bootDir.listFiles();
+        if (files == null || files.length == 0) return;
+
+        Arrays.sort(files, (a, b) -> a.getName().compareTo(b.getName()));
+
+        for (File script : files) {
+            if (!script.isFile() || script.getName().startsWith(".")) continue;
+            //noinspection ResultOfMethodCallIgnored
+            script.setExecutable(true);
+
+            Uri scriptUri = UriUtils.getFileUri(script.getAbsolutePath());
+            Intent executeIntent = new Intent(TERMUX_SERVICE.ACTION_SERVICE_EXECUTE, scriptUri);
+            executeIntent.setClass(context, TermuxService.class);
+            executeIntent.putExtra(TERMUX_SERVICE.EXTRA_RUNNER, ExecutionCommand.Runner.APP_SHELL.getName());
+            executeIntent.putExtra(TERMUX_SERVICE.EXTRA_WORKDIR, TermuxConstants.TERMUX_HOME_DIR_PATH);
+            executeIntent.putExtra(TERMUX_SERVICE.EXTRA_COMMAND_LABEL, "Boot: " + script.getName());
+
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(executeIntent);
+                } else {
+                    context.startService(executeIntent);
+                }
+            } catch (Exception e) {
+                Logger.logStackTraceWithMessage(LOG_TAG, "Failed to start boot script: " + script.getName(), e);
+            }
+        }
+    }
+
+    public synchronized void onActionPackageUpdated(@NonNull Context context, @NonNull Intent intent) {
+        Uri data = intent.getData();
+        if (data != null && TermuxUtils.isUriDataForTermuxPluginPackage(data)) {
+            Logger.logDebug(LOG_TAG, intent.getAction().replaceAll("^android.intent.action.", "") +
+                " event received for \"" + data.toString().replaceAll("^package:", "") + "\"");
+            if (TermuxFileUtils.isTermuxFilesDirectoryAccessible(context, false, false) == null)
+                TermuxShellEnvironment.writeEnvironmentToFile(context);
+        }
+    }
+
+
+
+    /**
+     * Register {@link SystemEventReceiver} to listen to {@link Intent#ACTION_PACKAGE_ADDED},
+     * {@link Intent#ACTION_PACKAGE_REMOVED} and {@link Intent#ACTION_PACKAGE_REPLACED} broadcasts.
+     * They must be registered dynamically and cannot be registered implicitly in
+     * the AndroidManifest.xml due to Android 8+ restrictions.
+     *
+     *  https://developer.android.com/guide/components/broadcast-exceptions
+     */
+    public synchronized static void registerPackageUpdateEvents(@NonNull Context context) {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        intentFilter.addAction(Intent.ACTION_PACKAGE_REPLACED);
+        intentFilter.addDataScheme("package");
+        context.registerReceiver(getInstance(), intentFilter);
+    }
+
+    public synchronized static void unregisterPackageUpdateEvents(@NonNull Context context) {
+        context.unregisterReceiver(getInstance());
+    }
+
+}

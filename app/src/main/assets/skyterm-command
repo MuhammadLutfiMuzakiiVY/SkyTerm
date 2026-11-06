@@ -1,0 +1,84 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# SKYTERM_MANAGED_COMMAND
+
+SKYTERM_VERSION="@SKYTERM_VERSION@"
+
+show_help() {
+    cat <<'HELP'
+SkyTerm command line
+
+Usage:
+  skyterm help       Show this help
+  skyterm version    Show the SkyTerm app version
+  skyterm doctor     Check basic shell and package-manager availability
+
+Ubuntu package examples:
+  apt search <query>
+  apt install <package>
+  apt update && apt upgrade
+  apt remove <package>
+
+Termux package examples:
+  pkg search <query>
+  pkg install <package>
+  pkg update && pkg upgrade
+  pkg uninstall <package>
+
+For Android restrictions and saved crash reports, open SkyTerm settings and
+choose Stability Diagnostics.
+HELP
+}
+
+run_doctor() {
+    local status=0 command_name
+    printf 'SkyTerm doctor (%s)\n\n' "$SKYTERM_VERSION"
+    if command -v pkg >/dev/null 2>&1; then
+        for command_name in bash pkg; do
+            if command -v "$command_name" >/dev/null 2>&1; then
+                printf '[OK] %s available\n' "$command_name"
+            else
+                printf '[WARN] %s not found in this environment\n' "$command_name"
+                status=1
+            fi
+        done
+    else
+        for command_name in bash apt dpkg; do
+            if command -v "$command_name" >/dev/null 2>&1; then
+                printf '[OK] %s available\n' "$command_name"
+            else
+                printf '[WARN] %s not found in this environment\n' "$command_name"
+                status=1
+            fi
+        done
+    fi
+
+    if [ -r /etc/os-release ]; then
+        . /etc/os-release
+        printf '[INFO] Distribution: %s\n' "${PRETTY_NAME:-unknown}"
+    else
+        printf '[INFO] Distribution metadata is unavailable\n'
+    fi
+
+    if command -v df >/dev/null 2>&1; then
+        df -h / 2>/dev/null | tail -n 1
+    fi
+    printf '\nFor the Android-side report, open Settings > Stability Diagnostics.\n'
+    return "$status"
+}
+
+case "${1:-help}" in
+    help|-h|--help)
+        show_help
+        ;;
+    version|-v|--version)
+        printf 'SkyTerm %s\n' "$SKYTERM_VERSION"
+        ;;
+    doctor)
+        run_doctor
+        ;;
+    *)
+        printf 'Unknown command: %s\n\n' "$1" >&2
+        show_help >&2
+        exit 2
+        ;;
+esac

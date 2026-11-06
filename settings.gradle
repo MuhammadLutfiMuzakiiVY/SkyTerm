@@ -1,0 +1,3 @@
+rootProject.name = "SkyTerm"
+include ':app', ':termux-shared', ':terminal-emulator', ':terminal-view'
+
